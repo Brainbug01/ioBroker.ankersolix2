@@ -172,8 +172,8 @@ class Ankersolix2 extends adapter_core_1.Adapter {
         }
         const controlMaxPowerOutput = config?.ControlMaxPowerOutput;
         if (controlMaxPowerOutput !== undefined &&
-            (typeof controlMaxPowerOutput !== 'number' || controlMaxPowerOutput < 0 || controlMaxPowerOutput > 800)) {
-            errors.push('Maximum power output for adapter control must be between 0 and 800 watts');
+            (typeof controlMaxPowerOutput !== 'number' || controlMaxPowerOutput < 0 || controlMaxPowerOutput > 1200)) {
+            errors.push('Maximum power output for adapter control must be between 0 and 1200 watts');
         }
         if (errors.length > 0) {
             errors.forEach(err => this.log.error(`${err} - please check instance configuration of ${this.namespace}`));
@@ -802,7 +802,7 @@ class Ankersolix2 extends adapter_core_1.Adapter {
                 this.setApiCon(true);
                 const siteID = this.config.ControlSiteID.split('.')[2];
                 const { data: powerLimit } = await this.loggedInApi.getPowerLimit(siteID);
-                const configuredMaxPower = typeof this.config.ControlMaxPowerOutput === 'number' ? this.config.ControlMaxPowerOutput : 800;
+                const configuredMaxPower = typeof this.config.ControlMaxPowerOutput === 'number' ? this.config.ControlMaxPowerOutput : 1200;
                 const cappedInputValue = value > configuredMaxPower ? configuredMaxPower : value;
                 const deviceMaxPowerCandidate = typeof powerLimit.max_power_limit === 'number' ? powerLimit.max_power_limit : powerLimit.all_power_limit;
                 const deviceMaxPower = typeof deviceMaxPowerCandidate === 'number' && deviceMaxPowerCandidate > 0
@@ -810,7 +810,7 @@ class Ankersolix2 extends adapter_core_1.Adapter {
                     : configuredMaxPower;
                 const normalizedInputValue = Math.max(cappedInputValue, 0);
                 const targetPower = this.myfunc.rundeAufZehner(normalizedInputValue, deviceMaxPower);
-                const jsonstring = '{"mode_type":3,"custom_rate_plan":[{"index":0,"week":[0,1,2,3,4,5,6],"ranges":[{"start_time":"00:00","end_time":"24:00","power":400}]}],"blend_plan":null,"default_home_load":200,"max_load":800,"min_load":0,"step":10}';
+                const jsonstring = '{"mode_type":3,"custom_rate_plan":[{"index":0,"week":[0,1,2,3,4,5,6],"ranges":[{"start_time":"00:00","end_time":"24:00","power":400}]}],"blend_plan":null,"default_home_load":200,"max_load":1200,"min_load":0,"step":10}';
                 const config = JSON.parse(jsonstring);
                 config.mode_type = 3; //3 = Benutzerdefiniert Modus
                 config.default_home_load = targetPower;
