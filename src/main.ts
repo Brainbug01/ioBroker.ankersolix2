@@ -166,9 +166,9 @@ export class Ankersolix2 extends Adapter {
         const controlMaxPowerOutput = config?.ControlMaxPowerOutput;
         if (
             controlMaxPowerOutput !== undefined &&
-            (typeof controlMaxPowerOutput !== 'number' || controlMaxPowerOutput < 0 || controlMaxPowerOutput > 800)
+            (typeof controlMaxPowerOutput !== 'number' || controlMaxPowerOutput < 0 || controlMaxPowerOutput > 1200)
         ) {
-            errors.push('Maximum power output for adapter control must be between 0 and 800 watts');
+            errors.push('Maximum power output for adapter control must be between 0 and 1200 watts');
         }
 
         if (errors.length > 0) {
@@ -933,7 +933,7 @@ export class Ankersolix2 extends Adapter {
                 const siteID = this.config.ControlSiteID.split('.')[2];
                 const { data: powerLimit } = await this.loggedInApi.getPowerLimit(siteID);
                 const configuredMaxPower =
-                    typeof this.config.ControlMaxPowerOutput === 'number' ? this.config.ControlMaxPowerOutput : 800;
+                    typeof this.config.ControlMaxPowerOutput === 'number' ? this.config.ControlMaxPowerOutput : 1200;
                 const cappedInputValue = value > configuredMaxPower ? configuredMaxPower : value;
                 const deviceMaxPowerCandidate =
                     typeof powerLimit.max_power_limit === 'number'
@@ -946,7 +946,7 @@ export class Ankersolix2 extends Adapter {
                 const normalizedInputValue = Math.max(cappedInputValue, 0);
                 const targetPower = this.myfunc.rundeAufZehner(normalizedInputValue, deviceMaxPower);
                 const jsonstring =
-                    '{"mode_type":3,"custom_rate_plan":[{"index":0,"week":[0,1,2,3,4,5,6],"ranges":[{"start_time":"00:00","end_time":"24:00","power":400}]}],"blend_plan":null,"default_home_load":200,"max_load":800,"min_load":0,"step":10}';
+                    '{"mode_type":3,"custom_rate_plan":[{"index":0,"week":[0,1,2,3,4,5,6],"ranges":[{"start_time":"00:00","end_time":"24:00","power":400}]}],"blend_plan":null,"default_home_load":200,"max_load":1200,"min_load":0,"step":10}';
                 const config: EnergyConfig = JSON.parse(jsonstring);
 
                 config.mode_type = 3; //3 = Benutzerdefiniert Modus
